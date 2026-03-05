@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bubu & Dudu Flappy</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy"></canvas>
+      <section id="sharePanel" class="share-panel" hidden>
+        <button id="shareBtn" class="share-btn" type="button">Share Score</button>
+        <div class="share-links">
+          <a id="shareX" class="share-link" href="#" target="_blank" rel="noopener noreferrer">X</a>
+          <a id="shareFacebook" class="share-link" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a id="shareWhatsApp" class="share-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <button id="copyShareBtn" class="share-link share-copy" type="button">Copy</button>
+        </div>
+        <p id="shareStatus" class="share-status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
