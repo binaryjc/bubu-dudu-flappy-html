@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bubu & Dudu Flappy</title>
+    <title>Bubu & Dudu Flappy - Cute HTML5 Browser Game</title>
     <meta
       name="description"
-      content="Play Bubu & Dudu Flappy, a cute and addictive flappy-style arcade game with simple one-tap controls, endless high-score gameplay, and mobile-friendly browser support."
+      content="Play Bubu & Dudu Flappy, a cute casual flying bear game and flappy style arcade game. This HTML5 browser game works on desktop and mobile with simple controls."
     />
     <script
       async
@@ -16,110 +16,156 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="mobile-info-toggles">
-      <button class="info-toggle" type="button" data-target="leftInfo" aria-expanded="false">
-        About Game
-      </button>
-      <button class="info-toggle" type="button" data-target="rightInfo" aria-expanded="false">
-        Features & Controls
-      </button>
-    </div>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">Bubu &amp; Dudu Flappy</a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="index.html" aria-current="page">Home</a>
+          <a href="about.html">About</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
 
-    <main class="site-layout">
-      <aside id="leftInfo" class="info-panel">
-        <div class="panel-mascot">
-          <img src="bubu.png" alt="Bubu mascot" width="132" height="132" />
-        </div>
-        <h2>Game Description</h2>
+    <main class="container page-content">
+      <section class="card hero-card">
+        <h1>Bubu &amp; Dudu Flappy</h1>
         <p>
-          Bubu &amp; Dudu Flappy is a cute and addictive arcade flying game where two lovable bears
-          take on an endless sky adventure. Help Bubu and Dudu fly together through a sweet honey
-          world filled with tricky obstacles and narrow gaps.
+          Welcome to the Bubu and Dudu game, a cute casual game where two lovable bears fly through a
+          honey-themed sky. This online flappy game is built for fun sessions and score chasing.
         </p>
-        <p>
-          Tap or click to flap their wings and keep them in the air while avoiding collisions with
-          honey trees and obstacles. Inspired by classic flappy-style arcade games, Bubu &amp; Dudu
-          Flappy challenges your reflexes, timing, and focus.
-        </p>
-        <p>
-          The longer you survive, the faster and more intense the run feels. Guide the two flying
-          bears as far as possible, collect points by passing obstacles, and try to beat your high
-          score.
-        </p>
-        <p>
-          With simple one-tap controls, charming characters, and endless gameplay, Bubu &amp; Dudu
-          Flappy is perfect for quick gaming sessions on desktop and mobile browsers.
-        </p>
-        <p>
-          Can you master the timing and help Bubu and Dudu fly the farthest distance in this fun
-          casual arcade challenge?
-        </p>
-      </aside>
+      </section>
 
-      <section class="center-column">
-        <section class="game-shell">
-          <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy"></canvas>
-          <section id="sharePanel" class="share-panel" hidden>
-            <button id="shareBtn" class="share-btn" type="button">Share Score</button>
-            <div class="share-links">
-              <a id="shareX" class="share-link" href="#" target="_blank" rel="noopener noreferrer">X</a>
-              <a id="shareFacebook" class="share-link" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
-              <a id="shareWhatsApp" class="share-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              <button id="copyShareBtn" class="share-link share-copy" type="button">Copy</button>
-            </div>
-            <p id="shareStatus" class="share-status" aria-live="polite"></p>
-          </section>
+      <section class="game-area card" aria-label="Game Canvas Area">
+        <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy Game"></canvas>
+        <section id="sharePanel" class="share-panel" hidden>
+          <button id="shareBtn" class="share-btn" type="button">Share Score</button>
+          <div class="share-links">
+            <a id="shareX" class="share-link" href="#" target="_blank" rel="noopener noreferrer">X</a>
+            <a id="shareFacebook" class="share-link" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a id="shareWhatsApp" class="share-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <button id="copyShareBtn" class="share-link share-copy" type="button">Copy</button>
+          </div>
+          <p id="shareStatus" class="share-status" aria-live="polite"></p>
         </section>
       </section>
 
-      <aside id="rightInfo" class="info-panel">
-        <div class="panel-mascot panel-mascot-flip">
-          <img src="dudu.png" alt="Dudu mascot" width="132" height="132" />
+      <section class="card">
+        <h2>Game Description</h2>
+        <p>
+          Bubu &amp; Dudu Flappy is a flappy style arcade game where Bubu leads and Dudu follows through
+          moving obstacles and tight gaps. Gravity pulls them down, so timing each flap is the key to
+          survival. The objective is simple: fly farther, pass more obstacles, and beat your best score.
+        </p>
+        <p>
+          As an HTML5 browser game, it runs directly in modern browsers with no installation. It is tuned
+          for desktop and mobile play, making it a lightweight flying bear game you can enjoy anywhere.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>How to Play</h2>
+        <p>
+          Start the run and guide Bubu through each obstacle gap. Every clean pass increases your score.
+          If you hit an obstacle or the ground, the round ends. Stay calm, flap in short bursts, and keep
+          your height steady before each gap.
+        </p>
+      </section>
+
+      <section class="card controls-grid">
+        <div>
+          <h2>Controls</h2>
+          <h3>Desktop</h3>
+          <ul>
+            <li><strong>Spacebar</strong> - Flap</li>
+            <li><strong>Mouse Click</strong> - Flap</li>
+          </ul>
         </div>
-        <h2>Features</h2>
-        <ul>
-          <li>Cute Bubu &amp; Dudu bear characters</li>
-          <li>Fun two-character flying gameplay</li>
-          <li>Classic flappy arcade mechanics</li>
-          <li>Endless high-score challenge</li>
-          <li>Simple tap, click, or spacebar controls</li>
-          <li>Playable on desktop and mobile</li>
-          <li>Fast and lightweight HTML5 browser game</li>
-        </ul>
+        <div>
+          <h3>Mobile / Tablet</h3>
+          <ul>
+            <li><strong>Tap Screen</strong> - Flap</li>
+          </ul>
+        </div>
+      </section>
 
-        <h2>Controls</h2>
-        <h3>Desktop</h3>
-        <p><strong>Spacebar</strong> - Flap</p>
-        <p><strong>Left Mouse Click</strong> - Flap</p>
-        <h3>Mobile / Tablet</h3>
-        <p><strong>Tap the screen</strong> - Flap</p>
+      <section class="card">
+        <h2>FAQ</h2>
+        <div class="faq-item">
+          <h3>What is Bubu &amp; Dudu Flappy?</h3>
+        <p>
+          It is a cute casual game built as an HTML5 browser game. The main goal is to fly through
+            obstacles and chase a higher score each run.
+        </p>
+        </div>
+        <div class="faq-item">
+          <h3>How do I control the bears?</h3>
+          <p>
+            On desktop, press spacebar or click the mouse to flap. On mobile, tap anywhere on the game
+            canvas. Good timing matters more than fast tapping.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3>Can I play on mobile devices?</h3>
+          <p>
+            Yes. This online flappy game is responsive and optimized for mobile browsers and tablets.
+            You can play directly without downloading an app.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3>Is the game free to play?</h3>
+          <p>
+            Yes, the Bubu and Dudu game is free to play in your browser. You can replay unlimited rounds
+            and keep improving your high score.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3>Who created the game?</h3>
+          <p>
+            Bubu &amp; Dudu Flappy is an indie web project focused on fun, fast, accessible arcade gameplay.
+            The goal is to expand this into a small browser game portal over time.
+          </p>
+        </div>
+      </section>
 
-        <h2>Quick Tips</h2>
-        <ul>
-          <li>Use short, rhythmic taps instead of long panic tapping.</li>
-          <li>Watch the next gap early to line up smoother entries.</li>
-          <li>Use score sharing to challenge friends and track progress.</li>
-        </ul>
-      </aside>
+      <section class="card">
+        <h2>More Games (Coming Soon)</h2>
+        <div class="games-grid">
+          <article class="mini-game-card">
+            <div class="thumb">🍯</div>
+            <h3>Bubu Honey Stack</h3>
+            <p>Stack sweet honey blocks with careful timing and balance.</p>
+            <span class="coming-tag">Coming Soon</span>
+          </article>
+          <article class="mini-game-card">
+            <div class="thumb">🧠</div>
+            <h3>Dudu Memory Match</h3>
+            <p>Flip cards, match pairs, and train your memory speed.</p>
+            <span class="coming-tag">Coming Soon</span>
+          </article>
+          <article class="mini-game-card">
+            <div class="thumb">🌤️</div>
+            <h3>Bubu Jump Adventure</h3>
+            <p>Jump between floating platforms in a bright sky world.</p>
+            <span class="coming-tag">Coming Soon</span>
+          </article>
+          <article class="mini-game-card">
+            <div class="thumb">🧩</div>
+            <h3>Bubu Puzzle World</h3>
+            <p>Solve colorful bite-size puzzles with increasing challenge.</p>
+            <span class="coming-tag">Coming Soon</span>
+          </article>
+        </div>
+      </section>
     </main>
 
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; 2026 Bubu &amp; Dudu Flappy. All rights reserved.</p>
+      </div>
+    </footer>
+
     <script src="game.js"></script>
-    <script>
-      (() => {
-        const toggleButtons = document.querySelectorAll(".info-toggle");
-        if (!toggleButtons.length) return;
-
-        toggleButtons.forEach((button) => {
-          button.addEventListener("click", () => {
-            const target = button.dataset.target;
-            const panel = document.getElementById(target);
-            if (!panel) return;
-
-            const isOpen = panel.classList.toggle("is-open");
-            button.setAttribute("aria-expanded", String(isOpen));
-          });
-        });
-      })();
-    </script>
   </body>
 </html>
