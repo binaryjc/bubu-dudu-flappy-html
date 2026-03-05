@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bubu & Dudu Asset Export</title>
+    <style>
+      :root {
+        --bg: #f5fbff;
+        --card: #ffffff;
+        --ink: #4c3523;
+        --line: #e6d5bf;
+        --accent: #ffbf69;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: radial-gradient(circle at 20% 10%, #f7fdff 0%, #eaf6ff 42%, #fff8e1 100%);
+        font-family: "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+        color: var(--ink);
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      h1 {
+        margin: 4px 0 8px;
+        font-size: 30px;
+      }
+
+      p {
+        margin: 0 0 14px;
+        font-size: 14px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 10px;
+        box-shadow: 0 10px 24px rgba(48, 74, 95, 0.12);
+      }
+
+      .meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .name {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .size {
+        font-size: 11px;
+        opacity: 0.7;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+        border: 1px solid #ead8bf;
+        background: #fff;
+        image-rendering: auto;
+      }
+
+      .actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font: 700 12px/1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+        background: var(--accent);
+        color: #4a2f1c;
+        cursor: pointer;
+      }
+
+      @media (max-width: 520px) {
+        h1 {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Bubu & Dudu Drawn Assets</h1>
+      <p>Each canvas is exported from JS-drawn elements. Click <strong>Download PNG</strong> per card.</p>
+
+      <section class="grid" id="assetGrid">
+        <article class="card">
+          <div class="meta">
+            <span class="name">Background Full</span>
+            <span class="size">720 x 1280</span>
+          </div>
+          <canvas id="bgFull" width="720" height="1280"></canvas>
+          <div class="actions"><button data-dl="bgFull" data-name="background_full.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Sky + Sun Only</span>
+            <span class="size">720 x 1280</span>
+          </div>
+          <canvas id="bgSky" width="720" height="1280"></canvas>
+          <div class="actions"><button data-dl="bgSky" data-name="background_sky.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Ground Strip</span>
+            <span class="size">720 x 220</span>
+          </div>
+          <canvas id="ground" width="720" height="220"></canvas>
+          <div class="actions"><button data-dl="ground" data-name="ground_strip.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Cloud Sprite</span>
+            <span class="size">240 x 140</span>
+          </div>
+          <canvas id="cloud" width="240" height="140"></canvas>
+          <div class="actions"><button data-dl="cloud" data-name="cloud_01.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Pipe Top</span>
+            <span class="size">220 x 720</span>
+          </div>
+          <canvas id="pipeTop" width="220" height="720"></canvas>
+          <div class="actions"><button data-dl="pipeTop" data-name="pipe_top.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Pipe Bottom</span>
+            <span class="size">220 x 720</span>
+          </div>
+          <canvas id="pipeBottom" width="220" height="720"></canvas>
+          <div class="actions"><button data-dl="pipeBottom" data-name="pipe_bottom.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Pipe Body Tile</span>
+            <span class="size">120 x 120</span>
+          </div>
+          <canvas id="pipeTile" width="120" height="120"></canvas>
+          <div class="actions"><button data-dl="pipeTile" data-name="pipe_body_tile.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Pipe Cap</span>
+            <span class="size">150 x 42</span>
+          </div>
+          <canvas id="pipeCap" width="150" height="42"></canvas>
+          <div class="actions"><button data-dl="pipeCap" data-name="pipe_cap.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">UI Panel</span>
+            <span class="size">500 x 300</span>
+          </div>
+          <canvas id="panel" width="500" height="300"></canvas>
+          <div class="actions"><button data-dl="panel" data-name="ui_panel.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Score Text</span>
+            <span class="size">360 x 120</span>
+          </div>
+          <canvas id="score" width="360" height="120"></canvas>
+          <div class="actions"><button data-dl="score" data-name="score_text.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Fallback Bear (Bubu)</span>
+            <span class="size">180 x 180</span>
+          </div>
+          <canvas id="bearBubu" width="180" height="180"></canvas>
+          <div class="actions"><button data-dl="bearBubu" data-name="fallback_bubu.png">Download PNG</button></div>
+        </article>
+
+        <article class="card">
+          <div class="meta">
+            <span class="name">Fallback Bear (Dudu)</span>
+            <span class="size">180 x 180</span>
+          </div>
+          <canvas id="bearDudu" width="180" height="180"></canvas>
+          <div class="actions"><button data-dl="bearDudu" data-name="fallback_dudu.png">Download PNG</button></div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      function roundRect(context, x, y, width, height, radius) {
+        const r = Math.min(radius, width * 0.5, height * 0.5);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      }
+
+      function drawCloud(ctx, x, y, size) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
+        ctx.beginPath();
+        ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
+        ctx.arc(x + size * 0.45, y - size * 0.15, size * 0.42, 0, Math.PI * 2);
+        ctx.arc(x + size * 0.92, y, size * 0.36, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawHillLayer(ctx, width, height, color, baseline, amp, phase) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(0, height);
+        ctx.lineTo(0, baseline);
+
+        for (let x = 0; x <= width; x += 6) {
+          const y = baseline + Math.sin((x + phase) * 0.025) * amp;
+          ctx.lineTo(x, y);
+        }
+
+        ctx.lineTo(width, height);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function drawHex(ctx, x, y, radius, fill, stroke) {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i += 1) {
+          const angle = (Math.PI / 3) * i;
+          const px = x + Math.cos(angle) * radius;
+          const py = y + Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      function drawHoneyPipe(ctx, x, y, width, height, capAtBottom) {
+        if (height <= 0) return;
+
+        const bodyColor = "#f0b23d";
+        const edgeColor = "#9a631c";
+
+        ctx.fillStyle = bodyColor;
+        roundRect(ctx, x, y, width, height, 10);
+        ctx.fill();
+
+        ctx.strokeStyle = edgeColor;
+        ctx.lineWidth = 3;
+        roundRect(ctx, x, y, width, height, 10);
+        ctx.stroke();
+
+        for (let row = y + 10; row < y + height - 8; row += 12) {
+          const offset = Math.floor((row - y) / 12) % 2 === 0 ? 0 : 6;
+          for (let col = x + 10 + offset; col < x + width - 8; col += 12) {
+            drawHex(ctx, col, row, 4.2, "#ffd36e", "rgba(154, 99, 28, 0.22)");
+          }
+        }
+
+        const capHeight = 16;
+        const capY = capAtBottom ? y + height - capHeight : y;
+
+        ctx.fillStyle = "#ffd26f";
+        roundRect(ctx, x - 6, capY, width + 12, capHeight, 8);
+        ctx.fill();
+
+        ctx.strokeStyle = edgeColor;
+        ctx.lineWidth = 2;
+        roundRect(ctx, x - 6, capY, width + 12, capHeight, 8);
+        ctx.stroke();
+      }
+
+      function drawBearPlaceholder(ctx, isDudu, wingBeat) {
+        const body = isDudu ? "#bf9a77" : "#a36f45";
+        const belly = isDudu ? "#f9e3cc" : "#ffe7c8";
+        const ear = isDudu ? "#d5b090" : "#c98a57";
+        const eye = "#2f1d12";
+
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, isDudu ? 17 : 20, isDudu ? 15 : 17, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = ear;
+        ctx.beginPath();
+        ctx.arc(-10, -12, 6, 0, Math.PI * 2);
+        ctx.arc(10, -12, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        const wingYOffset = wingBeat * 2;
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(-14, 1 + wingYOffset, 7, 5, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(14, 1 - wingYOffset, 7, 5, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = belly;
+        ctx.beginPath();
+        ctx.ellipse(0, 4, isDudu ? 9 : 11, isDudu ? 8 : 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = eye;
+        ctx.beginPath();
+        ctx.arc(-5, -2, 1.6, 0, Math.PI * 2);
+        ctx.arc(5, -2, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 2, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function paintBackground(canvasId, includeHills) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const width = canvas.width;
+        const height = canvas.height;
+        const groundY = height - 192;
+
+        const sky = ctx.createLinearGradient(0, 0, 0, height);
+        sky.addColorStop(0, "#b6ebff");
+        sky.addColorStop(0.55, "#d9f6ff");
+        sky.addColorStop(1, "#fff3ce");
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = "rgba(255, 228, 139, 0.55)";
+        ctx.beginPath();
+        ctx.arc(width - 124, 122, 68, 0, Math.PI * 2);
+        ctx.fill();
+
+        drawCloud(ctx, 80, 170, 62);
+        drawCloud(ctx, 320, 250, 50);
+        drawCloud(ctx, 520, 140, 72);
+        drawCloud(ctx, 680, 220, 52);
+
+        if (includeHills) {
+          drawHillLayer(ctx, width, height, "#aee2b8", groundY - 80, 48, 20);
+          drawHillLayer(ctx, width, height, "#92d6a5", groundY - 36, 38, 80);
+        }
+      }
+
+      function paintGround() {
+        const canvas = document.getElementById("ground");
+        const ctx = canvas.getContext("2d");
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const grad = ctx.createLinearGradient(0, 0, 0, height);
+        grad.addColorStop(0, "#ffd98c");
+        grad.addColorStop(1, "#f3b74b");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.strokeStyle = "#9f6f2f";
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(width, 0);
+        ctx.stroke();
+
+        for (let x = -24; x < width + 24; x += 24) {
+          ctx.fillStyle = "rgba(255, 238, 173, 0.45)";
+          ctx.fillRect(x, 42, 14, 8);
+          ctx.fillRect(x + 8, 86, 12, 7);
+          ctx.fillRect(x - 4, 126, 10, 6);
+        }
+      }
+
+      function paintPipe() {
+        const top = document.getElementById("pipeTop");
+        const bot = document.getElementById("pipeBottom");
+
+        const topCtx = top.getContext("2d");
+        const botCtx = bot.getContext("2d");
+
+        drawHoneyPipe(topCtx, 74, 18, 72, top.height - 36, true);
+        drawHoneyPipe(botCtx, 74, 18, 72, bot.height - 36, false);
+      }
+
+      function paintPipeTile() {
+        const canvas = document.getElementById("pipeTile");
+        const ctx = canvas.getContext("2d");
+        drawHoneyPipe(ctx, 12, 8, 96, 104, false);
+      }
+
+      function paintPipeCap() {
+        const canvas = document.getElementById("pipeCap");
+        const ctx = canvas.getContext("2d");
+
+        const edgeColor = "#9a631c";
+        ctx.fillStyle = "#ffd26f";
+        roundRect(ctx, 8, 10, 134, 22, 8);
+        ctx.fill();
+
+        ctx.strokeStyle = edgeColor;
+        ctx.lineWidth = 2;
+        roundRect(ctx, 8, 10, 134, 22, 8);
+        ctx.stroke();
+      }
+
+      function paintCloud() {
+        const canvas = document.getElementById("cloud");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawCloud(ctx, 46, 76, 88);
+      }
+
+      function paintPanel() {
+        const canvas = document.getElementById("panel");
+        const ctx = canvas.getContext("2d");
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        roundRect(ctx, 24, 24, canvas.width - 48, canvas.height - 48, 22);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255, 196, 105, 0.95)";
+        ctx.lineWidth = 4;
+        roundRect(ctx, 24, 24, canvas.width - 48, canvas.height - 48, 22);
+        ctx.stroke();
+      }
+
+      function paintScore() {
+        const canvas = document.getElementById("score");
+        const ctx = canvas.getContext("2d");
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = 'bold 72px "Trebuchet MS", "Comic Sans MS", sans-serif';
+
+        ctx.fillStyle = "rgba(65, 39, 21, 0.3)";
+        ctx.fillText("12", canvas.width * 0.5, 62);
+
+        ctx.fillStyle = "#fffef8";
+        ctx.fillText("12", canvas.width * 0.5, 58);
+      }
+
+      function paintBear(canvasId, isDudu) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.scale(2.8, 2.8);
+        drawBearPlaceholder(ctx, isDudu, 0.22);
+      }
+
+      function downloadCanvas(canvasId, fileName) {
+        const canvas = document.getElementById(canvasId);
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = fileName;
+        link.click();
+      }
+
+      function init() {
+        paintBackground("bgFull", true);
+        paintBackground("bgSky", false);
+        paintGround();
+        paintCloud();
+        paintPipe();
+        paintPipeTile();
+        paintPipeCap();
+        paintPanel();
+        paintScore();
+        paintBear("bearBubu", false);
+        paintBear("bearDudu", true);
+
+        document.querySelectorAll("button[data-dl]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            downloadCanvas(btn.dataset.dl, btn.dataset.name);
+          });
+        });
+      }
+
+      init();
+    </script>
+  </body>
+</html>
