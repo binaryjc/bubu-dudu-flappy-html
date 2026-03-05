@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bubu & Dudu Flappy</title>
+    <meta
+      name="description"
+      content="Play Bubu & Dudu Flappy, a cute and addictive flappy-style arcade game with simple one-tap controls, endless high-score gameplay, and mobile-friendly browser support."
+    />
     <script
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7344100376673259"
@@ -12,20 +16,104 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <main class="game-shell">
-      <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy"></canvas>
-      <section id="sharePanel" class="share-panel" hidden>
-        <button id="shareBtn" class="share-btn" type="button">Share Score</button>
-        <div class="share-links">
-          <a id="shareX" class="share-link" href="#" target="_blank" rel="noopener noreferrer">X</a>
-          <a id="shareFacebook" class="share-link" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
-          <a id="shareWhatsApp" class="share-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-          <button id="copyShareBtn" class="share-link share-copy" type="button">Copy</button>
-        </div>
-        <p id="shareStatus" class="share-status" aria-live="polite"></p>
+    <div class="mobile-info-toggles">
+      <button class="info-toggle" type="button" data-target="leftInfo" aria-expanded="false">
+        About Game
+      </button>
+      <button class="info-toggle" type="button" data-target="rightInfo" aria-expanded="false">
+        Features & Controls
+      </button>
+    </div>
+
+    <main class="site-layout">
+      <aside id="leftInfo" class="info-panel">
+        <h2>Game Description</h2>
+        <p>
+          Bubu &amp; Dudu Flappy is a cute and addictive arcade flying game where two lovable bears
+          take on an endless sky adventure. Help Bubu and Dudu fly together through a sweet honey
+          world filled with tricky obstacles and narrow gaps.
+        </p>
+        <p>
+          Tap or click to flap their wings and keep them in the air while avoiding collisions with
+          honey trees and obstacles. Inspired by classic flappy-style arcade games, Bubu &amp; Dudu
+          Flappy challenges your reflexes, timing, and focus.
+        </p>
+        <p>
+          The longer you survive, the faster and more intense the run feels. Guide the two flying
+          bears as far as possible, collect points by passing obstacles, and try to beat your high
+          score.
+        </p>
+        <p>
+          With simple one-tap controls, charming characters, and endless gameplay, Bubu &amp; Dudu
+          Flappy is perfect for quick gaming sessions on desktop and mobile browsers.
+        </p>
+        <p>
+          Can you master the timing and help Bubu and Dudu fly the farthest distance in this fun
+          casual arcade challenge?
+        </p>
+      </aside>
+
+      <section class="center-column">
+        <section class="game-shell">
+          <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy"></canvas>
+          <section id="sharePanel" class="share-panel" hidden>
+            <button id="shareBtn" class="share-btn" type="button">Share Score</button>
+            <div class="share-links">
+              <a id="shareX" class="share-link" href="#" target="_blank" rel="noopener noreferrer">X</a>
+              <a id="shareFacebook" class="share-link" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+              <a id="shareWhatsApp" class="share-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <button id="copyShareBtn" class="share-link share-copy" type="button">Copy</button>
+            </div>
+            <p id="shareStatus" class="share-status" aria-live="polite"></p>
+          </section>
+        </section>
       </section>
+
+      <aside id="rightInfo" class="info-panel">
+        <h2>Features</h2>
+        <ul>
+          <li>Cute Bubu &amp; Dudu bear characters</li>
+          <li>Fun two-character flying gameplay</li>
+          <li>Classic flappy arcade mechanics</li>
+          <li>Endless high-score challenge</li>
+          <li>Simple tap, click, or spacebar controls</li>
+          <li>Playable on desktop and mobile</li>
+          <li>Fast and lightweight HTML5 browser game</li>
+        </ul>
+
+        <h2>Controls</h2>
+        <h3>Desktop</h3>
+        <p><strong>Spacebar</strong> - Flap</p>
+        <p><strong>Left Mouse Click</strong> - Flap</p>
+        <h3>Mobile / Tablet</h3>
+        <p><strong>Tap the screen</strong> - Flap</p>
+
+        <h2>Quick Tips</h2>
+        <ul>
+          <li>Use short, rhythmic taps instead of long panic tapping.</li>
+          <li>Watch the next gap early to line up smoother entries.</li>
+          <li>Use score sharing to challenge friends and track progress.</li>
+        </ul>
+      </aside>
     </main>
 
     <script src="game.js"></script>
+    <script>
+      (() => {
+        const toggleButtons = document.querySelectorAll(".info-toggle");
+        if (!toggleButtons.length) return;
+
+        toggleButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const target = button.dataset.target;
+            const panel = document.getElementById(target);
+            if (!panel) return;
+
+            const isOpen = panel.classList.toggle("is-open");
+            button.setAttribute("aria-expanded", String(isOpen));
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
