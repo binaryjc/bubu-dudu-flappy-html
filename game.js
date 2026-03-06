@@ -8,6 +8,11 @@
   const shareWhatsApp = document.getElementById("shareWhatsApp");
   const copyShareBtn = document.getElementById("copyShareBtn");
   const shareStatus = document.getElementById("shareStatus");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const fullscreenTarget = document.getElementById("fullscreenTarget") || canvas.parentElement;
+  const fullscreenEnterLabel = fullscreenBtn
+    ? fullscreenBtn.dataset.enterLabel || fullscreenBtn.textContent.trim() || "Fullscreen"
+    : "Fullscreen";
 
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
@@ -117,6 +122,115 @@
     } catch {
       // Ignore storage errors (private mode, blocked storage, etc.).
     }
+  }
+
+  function getFullscreenElement() {
+    return (
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement ||
+      null
+    );
+  }
+
+  function updateFullscreenButton() {
+    if (!fullscreenBtn) return;
+    fullscreenBtn.textContent = getFullscreenElement() ? "Exit Fullscreen" : fullscreenEnterLabel;
+  }
+
+  function applyFullscreenLayout() {
+    const fullscreenElement = getFullscreenElement();
+    const isActive = Boolean(fullscreenElement);
+    const usingFallbackLayer = Boolean(isActive && fullscreenElement && fullscreenElement !== fullscreenTarget);
+
+    document.body.classList.toggle("app-fullscreen", isActive);
+    fullscreenTarget.classList.toggle("fullscreen-fallback-layer", usingFallbackLayer);
+
+    if (!isActive) {
+      canvas.style.width = "";
+      canvas.style.height = "";
+      fullscreenTarget.style.width = "";
+      fullscreenTarget.style.height = "";
+      return;
+    }
+
+    const viewport = window.visualViewport;
+    const viewportW = viewport ? viewport.width : window.innerWidth;
+    const viewportH = viewport ? viewport.height : window.innerHeight;
+    const padding = Math.max(8, Math.min(20, Math.min(viewportW, viewportH) * 0.02));
+    const maxW = Math.max(1, viewportW - padding * 2);
+    const maxH = Math.max(1, viewportH - padding * 2);
+    const scale = Math.min(maxW / WIDTH, maxH / HEIGHT);
+    const targetW = Math.max(1, Math.round(WIDTH * scale));
+    const targetH = Math.max(1, Math.round(HEIGHT * scale));
+
+    canvas.style.width = `${targetW}px`;
+    canvas.style.height = `${targetH}px`;
+
+    if (usingFallbackLayer) {
+      fullscreenTarget.style.width = "100vw";
+      fullscreenTarget.style.height = "100vh";
+    } else {
+      fullscreenTarget.style.width = "";
+      fullscreenTarget.style.height = "";
+    }
+  }
+
+  async function requestElementFullscreen(element) {
+    if (!element) return false;
+
+    const requestFn =
+      element.requestFullscreen ||
+      element.webkitRequestFullscreen ||
+      element.mozRequestFullScreen ||
+      element.msRequestFullscreen;
+
+    if (!requestFn) return false;
+
+    const result = requestFn.call(element);
+    if (result && typeof result.then === "function") {
+      try {
+        await result;
+      } catch {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function exitFullscreen() {
+    const exitFn =
+      document.exitFullscreen ||
+      document.webkitExitFullscreen ||
+      document.mozCancelFullScreen ||
+      document.msExitFullscreen;
+
+    if (!exitFn) return false;
+
+    const result = exitFn.call(document);
+    if (result && typeof result.then === "function") {
+      try {
+        await result;
+      } catch {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function toggleFullscreen() {
+    if (getFullscreenElement()) {
+      await exitFullscreen();
+      updateFullscreenButton();
+      return;
+    }
+
+    const targetOk = await requestElementFullscreen(fullscreenTarget);
+    if (!targetOk) {
+      await requestElementFullscreen(document.documentElement);
+    }
+    updateFullscreenButton();
   }
 
   function getShareUrl() {
@@ -797,6 +911,31 @@
     copyShareBtn.addEventListener("click", () => {
       copyShareText();
     });
+  }
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", () => {
+      resumeAudio();
+      toggleFullscreen();
+    });
+
+    const onFullscreenChange = () => {
+      updateFullscreenButton();
+      applyFullscreenLayout();
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+    document.addEventListener("mozfullscreenchange", onFullscreenChange);
+    document.addEventListener("MSFullscreenChange", onFullscreenChange);
+    document.addEventListener("msfullscreenchange", onFullscreenChange);
+    window.addEventListener("resize", applyFullscreenLayout);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", applyFullscreenLayout);
+      window.visualViewport.addEventListener("scroll", applyFullscreenLayout);
+    }
+    updateFullscreenButton();
+    applyFullscreenLayout();
   }
 
   resetGame();

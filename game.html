@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bubu & Dudu Flappy - Game Embed</title>
+    <meta
+      name="description"
+      content="Play Bubu & Dudu Flappy in an embed-friendly game page with fullscreen support."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="embed-only-body">
+    <main class="embed-only-main">
+      <section id="fullscreenTarget" class="game-frame game-frame-embed">
+        <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy Embedded Game"></canvas>
+        <button
+          id="fullscreenBtn"
+          class="fullscreen-btn fullscreen-btn-embed"
+          data-enter-label="Play Fullscreen"
+          type="button"
+        >
+          Play Fullscreen
+        </button>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>

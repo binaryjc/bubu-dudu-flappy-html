@@ -1,11 +1,11 @@
 :root {
-  --bg1: #eaf7ff;
-  --bg2: #fff6da;
-  --panel: rgba(255, 255, 255, 0.9);
-  --line: #f0dcb6;
-  --ink: #4f3622;
+  --bg-top: #ebf9ff;
+  --bg-bottom: #fff6dc;
+  --panel: rgba(255, 255, 255, 0.92);
+  --ink: #4f3521;
+  --line: #eedaba;
   --accent: #ffbf69;
-  --accent-2: #ffde9f;
+  --accent-dark: #7d4d13;
 }
 
 * {
@@ -18,7 +18,7 @@ body {
   padding: 0;
   font-family: "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
   color: var(--ink);
-  background: radial-gradient(circle at 15% 20%, #f4fcff 0%, var(--bg1) 40%, var(--bg2) 100%);
+  background: radial-gradient(circle at 18% 20%, #f7fcff 0%, var(--bg-top) 42%, var(--bg-bottom) 100%);
 }
 
 a {
@@ -26,20 +26,20 @@ a {
 }
 
 .container {
-  width: min(1100px, 94vw);
+  width: min(1120px, 94vw);
   margin: 0 auto;
 }
 
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(6px);
-  background: rgba(255, 255, 255, 0.75);
   border-bottom: 1px solid var(--line);
 }
 
-.nav-wrap {
+.nav-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,38 +47,37 @@ a {
   padding: 10px 0;
 }
 
-.brand {
+.site-brand {
   text-decoration: none;
-  font-size: clamp(18px, 2vw, 24px);
   font-weight: 800;
-  letter-spacing: 0.2px;
+  font-size: clamp(18px, 2.3vw, 25px);
+  letter-spacing: 0.3px;
 }
 
-.main-nav {
+.site-nav {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 8px;
 }
 
-.main-nav a {
+.site-nav a {
   text-decoration: none;
-  font-weight: 700;
   font-size: 14px;
+  font-weight: 700;
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid transparent;
 }
 
-.main-nav a:hover,
-.main-nav a[aria-current="page"] {
-  background: #fff7e5;
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  background: #fff8e8;
   border-color: var(--line);
 }
 
-.page-content {
-  padding: 18px 0 28px;
+.page-stack {
+  padding: 18px 0 30px;
   display: grid;
   gap: 12px;
 }
@@ -88,19 +87,19 @@ a {
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 10px 24px rgba(80, 104, 124, 0.12);
+  box-shadow: 0 10px 24px rgba(70, 95, 120, 0.12);
 }
 
 .hero-card h1,
 .prose h1 {
   margin: 0 0 8px;
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(30px, 4.5vw, 42px);
   line-height: 1.05;
 }
 
 h2 {
   margin: 0 0 8px;
-  font-size: clamp(22px, 2.6vw, 30px);
+  font-size: clamp(23px, 2.8vw, 31px);
   line-height: 1.2;
 }
 
@@ -129,29 +128,122 @@ ul {
   padding-left: 20px;
 }
 
-.game-area {
+.game-card {
   display: grid;
   justify-items: center;
   gap: 10px;
 }
 
+.game-frame {
+  position: relative;
+  width: min(100%, 420px);
+}
+
 #gameCanvas {
   display: block;
-  width: min(100%, 420px);
+  width: 100%;
   height: auto;
   aspect-ratio: 9 / 16;
   border-radius: 24px;
-  border: 3px solid rgba(255, 255, 255, 0.78);
+  border: 3px solid rgba(255, 255, 255, 0.8);
   box-shadow:
     0 18px 40px rgba(61, 94, 123, 0.28),
     inset 0 0 0 2px rgba(255, 255, 255, 0.25);
-  background: linear-gradient(180deg, #d2f2ff, #fff7d8);
+  background: linear-gradient(180deg, #d2f1ff, #fff7d7);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.controls-grid {
+.fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 6;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(41, 32, 20, 0.78);
+  color: #fff;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font: 700 12px/1.1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+  cursor: pointer;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(41, 32, 20, 0.9);
+}
+
+.game-frame:fullscreen,
+.game-frame:-webkit-full-screen,
+.game-frame:-moz-full-screen,
+.game-frame:-ms-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  display: grid;
+  place-items: center;
+  background: #101827;
+}
+
+.game-frame:fullscreen #gameCanvas,
+.game-frame:-webkit-full-screen #gameCanvas,
+.game-frame:-moz-full-screen #gameCanvas,
+.game-frame:-ms-fullscreen #gameCanvas {
+  width: min(96vw, calc(96vh * 9 / 16));
+  max-height: 96vh;
+  border-radius: 16px;
+}
+
+.share-panel {
+  width: min(100%, 420px);
+  padding: 10px 12px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.93);
+}
+
+.primary-btn {
+  border: 1px solid #e4aa48;
+  background: var(--accent);
+  color: #4f331f;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font: 800 14px/1.2 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+  cursor: pointer;
+}
+
+.share-panel .primary-btn {
+  width: 100%;
+}
+
+.share-grid {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e1ccaa;
+  background: #fff;
+  text-decoration: none;
+  font: 700 12px/1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+  color: #5d3e24;
+}
+
+.share-note {
+  margin: 8px 2px 0;
+  min-height: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6c4a2a;
+}
+
+.split-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
@@ -163,50 +255,49 @@ ul {
   border-top: 1px dashed #ead7ba;
 }
 
-.games-grid {
+.coming-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
-.mini-game-card {
-  border: 1px solid #efdcb7;
+.coming-card {
+  border: 1px solid #eedec2;
   border-radius: 12px;
-  background: #fffdf7;
+  background: #fffdf8;
   padding: 10px;
 }
 
-.thumb {
-  height: 86px;
+.placeholder-img {
+  height: 84px;
   border-radius: 10px;
-  background: linear-gradient(150deg, #ffe7bd, #f7f3ff 60%, #ddf7ff);
-  border: 1px solid #f0e3ca;
+  border: 1px solid #f1e3cb;
+  background: linear-gradient(150deg, #ffe9c3, #f3f1ff 60%, #ddf7ff);
   display: grid;
   place-items: center;
   font-size: 28px;
   margin-bottom: 8px;
 }
 
-.mini-game-card h3 {
+.coming-card h3 {
   margin: 0 0 4px;
   font-size: 16px;
 }
 
-.mini-game-card p {
+.coming-card p {
   margin: 0 0 8px;
   font-size: 13px;
-  line-height: 1.4;
 }
 
-.coming-tag {
+.coming-badge {
   display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  color: #714300;
-  background: var(--accent-2);
-  border: 1px solid #f0cd83;
+  border: 1px solid #efcf88;
+  background: #ffe9bf;
+  color: var(--accent-dark);
   border-radius: 999px;
   padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .prose h2 {
@@ -222,104 +313,168 @@ ul {
 
 .contact-form input,
 .contact-form textarea {
-  border: 1px solid #e2cfad;
+  border: 1px solid #dfcbab;
   border-radius: 10px;
   padding: 10px;
   font-family: inherit;
-  background: #fffdf8;
+  background: #fffef9;
 }
 
-.contact-form button {
-  width: fit-content;
-  border: 1px solid #e3aa4a;
-  background: var(--accent);
-  color: #4f331f;
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.share-panel {
-  width: min(100%, 420px);
-  padding: 10px 12px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #efddb9;
-}
-
-.share-btn {
-  width: 100%;
-  border: 0;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #4f331f;
-  font: 700 15px/1.2 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.share-links {
-  margin-top: 8px;
+.code-block-wrap {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
+  gap: 10px;
 }
 
-.share-link {
+.code-block {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e7d4b3;
+  background: #fffef9;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.copy-code-btn {
+  width: fit-content;
+}
+
+.embed-preview {
+  border-radius: 12px;
+  border: 1px solid #e7d5b7;
+  overflow: hidden;
+  background: #fff;
+}
+
+.embed-preview iframe {
+  display: block;
+  width: 100%;
+  height: 600px;
+  border: 0;
+}
+
+.embed-only-body {
+  min-height: 100vh;
+  background: #0f172a;
+}
+
+.embed-only-main {
+  min-height: 100vh;
   display: grid;
   place-items: center;
-  min-height: 34px;
-  border-radius: 8px;
-  border: 1px solid #e3cfad;
-  background: #fff;
-  color: #5d3e24;
-  text-decoration: none;
-  font: 700 12px/1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
-  cursor: pointer;
+  padding: 10px;
 }
 
-.share-copy {
-  font: 700 12px/1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+.game-frame-embed {
+  width: min(100%, 420px);
 }
 
-.share-status {
-  margin: 8px 2px 0;
-  min-height: 16px;
-  color: #6a4a2d;
-  font: 700 12px/1 "Trebuchet MS", "Avenir Next", "Comic Sans MS", sans-serif;
+.app-fullscreen .site-header,
+.app-fullscreen .site-footer,
+.app-fullscreen .card:not(.game-card),
+.app-fullscreen .share-panel {
+  display: none !important;
+}
+
+.app-fullscreen .game-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  width: 100vw;
+  height: 100vh;
+  box-shadow: none;
+  background: #101827;
+  display: grid;
+  place-items: center;
+}
+
+.app-fullscreen .game-frame {
+  width: auto;
+  max-width: none;
+}
+
+.fullscreen-fallback-layer {
+  position: fixed !important;
+  inset: 0;
+  z-index: 10000;
+  display: grid !important;
+  place-items: center;
+  background: #101827;
+  margin: 0;
+  max-width: none;
+}
+
+.fullscreen-btn-embed {
+  background: rgba(14, 112, 190, 0.82);
+}
+
+.fullscreen-btn-embed:hover {
+  background: rgba(14, 112, 190, 0.95);
 }
 
 .site-footer {
   border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.68);
 }
 
-.site-footer p {
-  margin: 0;
+.footer-row {
   padding: 14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-row p {
+  margin: 0;
   font-size: 13px;
 }
 
-@media (max-width: 920px) {
-  .games-grid {
+.footer-row nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-row nav a {
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footer-row nav a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .coming-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
-  .nav-wrap {
+  .nav-row {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .main-nav {
+  .site-nav {
     width: 100%;
     justify-content: flex-start;
   }
 
-  .controls-grid {
+  .split-card {
     grid-template-columns: 1fr;
+  }
+
+  .embed-preview iframe {
+    height: 460px;
   }
 
   #gameCanvas {
@@ -328,10 +483,6 @@ ul {
 }
 
 @media (max-width: 520px) {
-  body {
-    padding: 0;
-  }
-
   .container {
     width: 95vw;
   }
@@ -340,7 +491,11 @@ ul {
     padding: 14px;
   }
 
-  .games-grid {
+  .coming-grid {
     grid-template-columns: 1fr;
+  }
+
+  .embed-preview iframe {
+    height: 360px;
   }
 }

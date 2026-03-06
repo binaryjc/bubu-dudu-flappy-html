@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Embed Bubu & Dudu Flappy</title>
+    <meta
+      name="description"
+      content="Embed Bubu & Dudu Flappy on your site using iframe code snippets with fullscreen support."
+    />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7344100376673259"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-row">
+        <a class="site-brand" href="index.html">Bubu &amp; Dudu Flappy</a>
+        <nav class="site-nav" aria-label="Primary Navigation">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="characters.html">Characters</a>
+          <a href="game-tips.html">Game Tips</a>
+          <a href="embed.html" aria-current="page">Embed Game</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page-stack">
+      <section class="card prose">
+        <h1>Embed Bubu &amp; Dudu Flappy</h1>
+        <p>
+          Bubu &amp; Dudu Flappy is a free HTML5 browser game that can be embedded into many types of
+          websites. If you run a gaming portal, classroom resources page, coding blog, or kids activity
+          site, you can place the game directly inside your layout with a simple iframe. The game is built
+          as a lightweight online flappy game, so it loads quickly and plays well on modern desktop and
+          mobile browsers.
+        </p>
+        <p>
+          Embedded play supports fullscreen mode for better user experience, including when the game appears
+          inside another site. We recommend keeping visible credit to the original game page so players can
+          discover updates, character pages, and future releases in the Bubu and Dudu game series. You can
+          use either fixed-size or responsive embed code below depending on your content layout. This makes
+          it a practical option for blogs, school web portals, coding demos, and indie game directories.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Fixed Size Embed Code</h2>
+        <div class="code-block-wrap">
+          <pre id="fixedEmbedCode" class="code-block"><code>&lt;iframe 
+src="https://yourdomain.com/game.html"
+width="800"
+height="600"
+frameborder="0"
+allowfullscreen
+allow="fullscreen"&gt;
+&lt;/iframe&gt;</code></pre>
+          <button class="primary-btn copy-code-btn" data-copy-target="fixedEmbedCode" type="button">
+            Copy Code
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Responsive Embed Code</h2>
+        <div class="code-block-wrap">
+          <pre id="responsiveEmbedCode" class="code-block"><code>&lt;iframe 
+src="https://yourdomain.com/game.html"
+style="width:100%; height:600px; border:none;"
+allowfullscreen
+allow="fullscreen"&gt;
+&lt;/iframe&gt;</code></pre>
+          <button class="primary-btn copy-code-btn" data-copy-target="responsiveEmbedCode" type="button">
+            Copy Code
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Preview</h2>
+        <div class="embed-preview">
+          <iframe
+            src="game.html"
+            title="Bubu & Dudu Flappy Embed Preview"
+            loading="lazy"
+            allowfullscreen
+            allow="fullscreen"
+          ></iframe>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>&copy; 2026 Bubu &amp; Dudu Flappy</p>
+        <nav aria-label="Footer Links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const copyButtons = document.querySelectorAll('.copy-code-btn');
+
+        copyButtons.forEach((button) => {
+          button.addEventListener('click', async () => {
+            const targetId = button.getAttribute('data-copy-target');
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            const codeText = target.innerText.trim();
+
+            try {
+              await navigator.clipboard.writeText(codeText);
+              const original = button.textContent;
+              button.textContent = 'Copied';
+              setTimeout(() => {
+                button.textContent = original;
+              }, 1200);
+            } catch {
+              const original = button.textContent;
+              button.textContent = 'Copy Failed';
+              setTimeout(() => {
+                button.textContent = original;
+              }, 1200);
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
