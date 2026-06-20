@@ -224,6 +224,11 @@ ul {
   background: rgba(41, 32, 20, 0.9);
 }
 
+.game-action-btn.is-muted {
+  background: rgba(102, 70, 38, 0.62);
+  color: rgba(255, 251, 243, 0.9);
+}
+
 .controls-popover {
   position: absolute;
   inset: 0;

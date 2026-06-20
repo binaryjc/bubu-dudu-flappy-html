@@ -10,6 +10,7 @@
   const shareStatus = document.getElementById("shareStatus");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   const fullscreenTarget = document.getElementById("fullscreenTarget") || canvas.parentElement;
+  const musicBtn = document.getElementById("musicBtn");
   const controlsBtn = document.getElementById("controlsBtn");
   const controlsPanel = document.getElementById("controlsPanel");
   const controlsCloseBtn = document.getElementById("controlsCloseBtn");
@@ -36,13 +37,15 @@
     bubuDrawSize: 84,
     duduDrawSize: 70,
     duduFollowOffset: 58,
-    difficultyStep: 20,
+    difficultyStep: 15,
     minPipeGap: 150,
     maxSpeedMultiplier: 1.3,
     fireballRadius: 20,
     fireballWarningTime: 90,
+    countdownStepTime: 60,
     shareUrl: "", // Optional: set your deployed game URL here.
     highScoreKey: "bubuDuduFlappyHighScore",
+    musicEnabledKey: "bubuDuduFlappyMusicEnabled",
   };
 
   const state = {
@@ -56,6 +59,7 @@
     levelUpTimer: 0,
     levelUpText: "",
     fireballCooldown: 0,
+    countdownTimer: 0,
   };
 
   const bubu = {
@@ -95,6 +99,9 @@
   const audio = {
     ctx: null,
     enabled: true,
+    bgm: null,
+    bgmEnabled: readMusicEnabled(),
+    bgmVolume: 0.34,
   };
 
   function loadImage(sources) {
@@ -135,6 +142,23 @@
   function writeHighScore(value) {
     try {
       localStorage.setItem(CONFIG.highScoreKey, String(value));
+    } catch {
+      // Ignore storage errors (private mode, blocked storage, etc.).
+    }
+  }
+
+  function readMusicEnabled() {
+    try {
+      const stored = localStorage.getItem(CONFIG.musicEnabledKey);
+      return stored === null ? true : stored !== "false";
+    } catch {
+      return true;
+    }
+  }
+
+  function writeMusicEnabled(value) {
+    try {
+      localStorage.setItem(CONFIG.musicEnabledKey, String(value));
     } catch {
       // Ignore storage errors (private mode, blocked storage, etc.).
     }
@@ -366,11 +390,59 @@
     audio.ctx = new AudioCtx();
   }
 
+  function initBackgroundMusic() {
+    if (audio.bgm) return audio.bgm;
+
+    const bgm = new Audio("bubududubgm.mp3");
+    bgm.loop = true;
+    bgm.preload = "auto";
+    bgm.volume = audio.bgmVolume;
+    bgm.playsInline = true;
+    audio.bgm = bgm;
+    return bgm;
+  }
+
+  function updateMusicButton() {
+    if (!musicBtn) return;
+
+    const isOn = audio.bgmEnabled;
+    musicBtn.textContent = isOn ? "Music On" : "Music Off";
+    musicBtn.setAttribute("aria-pressed", String(isOn));
+    musicBtn.classList.toggle("is-muted", !isOn);
+  }
+
+  function syncBackgroundMusic() {
+    const bgm = initBackgroundMusic();
+    bgm.volume = audio.bgmVolume;
+
+    if (!audio.bgmEnabled || document.hidden) {
+      bgm.pause();
+      return;
+    }
+
+    if (!bgm.paused) return;
+
+    const playPromise = bgm.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        // Ignore autoplay rejections until the next user interaction.
+      });
+    }
+  }
+
+  function toggleBackgroundMusic() {
+    audio.bgmEnabled = !audio.bgmEnabled;
+    writeMusicEnabled(audio.bgmEnabled);
+    updateMusicButton();
+    syncBackgroundMusic();
+  }
+
   function resumeAudio() {
     initAudio();
     if (audio.ctx && audio.ctx.state === "suspended") {
       audio.ctx.resume();
     }
+    syncBackgroundMusic();
   }
 
   function playTone(
@@ -508,7 +580,7 @@
     pipe.gapY = gapY;
     pipe.moveOffset = 0;
     pipe.movePhase = Math.random() * Math.PI * 2;
-    pipe.moving = pipeSequence % 3 === 1;
+    pipe.moving = pipeSequence % 2 === 1;
     pipe.scored = false;
     pipeSequence += 1;
   }
@@ -534,6 +606,7 @@
     state.levelUpTimer = 0;
     state.levelUpText = "";
     state.fireballCooldown = 0;
+    state.countdownTimer = 0;
     fireballs.length = 0;
 
     bubu.x = CONFIG.bubuStartX;
@@ -556,6 +629,13 @@
 
   function startRun() {
     state.mode = "playing";
+  }
+
+  function startCountdown() {
+    state.mode = "countdown";
+    state.countdownTimer = CONFIG.countdownStepTime * 3;
+    bubu.vy = 0;
+    bubu.rotation = 0;
   }
 
   function flap() {
@@ -582,8 +662,11 @@
     resumeAudio();
 
     if (state.mode === "start") {
-      startRun();
-      flap();
+      startCountdown();
+      return;
+    }
+
+    if (state.mode === "countdown") {
       return;
     }
 
@@ -594,8 +677,7 @@
 
     if (state.mode === "gameover") {
       resetGame();
-      startRun();
-      flap();
+      startCountdown();
     }
   }
 
@@ -761,13 +843,22 @@
       updatePipes(dt);
       updateFireballs(dt);
       checkCollision();
-    } else if (state.mode === "start") {
+    } else if (state.mode === "start" || state.mode === "countdown") {
       const floatTargetY = HEIGHT * 0.42 + Math.sin(nowMs * 0.004) * 8;
       bubu.y += (floatTargetY - bubu.y) * Math.min(1, 0.12 * dt);
       bubu.rotation = Math.sin(nowMs * 0.003) * 0.05;
       bubu.vy = 0;
 
       state.scroll += CONFIG.scrollSpeed * 0.35 * dt;
+
+      if (state.mode === "countdown") {
+        state.countdownTimer = Math.max(0, state.countdownTimer - dt);
+
+        if (state.countdownTimer <= 0) {
+          startRun();
+          flap();
+        }
+      }
     } else if (state.mode === "gameover") {
       state.scroll += CONFIG.scrollSpeed * 0.35 * dt;
 
@@ -1147,6 +1238,29 @@
     ctx.fillText(`High Score: ${state.highScore}`, WIDTH / 2, HEIGHT * 0.2 + 188);
   }
 
+  function drawCountdownScreen() {
+    const panelWidth = 360;
+    const panelHeight = 210;
+    const panelX = (WIDTH - panelWidth) / 2;
+    const panelY = HEIGHT * 0.21;
+    const countdownValue = Math.max(1, Math.ceil(state.countdownTimer / CONFIG.countdownStepTime));
+
+    drawPanel(panelX, panelY, panelWidth, panelHeight);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#5d3e24";
+    ctx.font = 'bold 30px "Trebuchet MS", "Comic Sans MS", sans-serif';
+    ctx.fillText("Get Ready", WIDTH / 2, panelY + 54);
+
+    ctx.fillStyle = "#f08a2a";
+    ctx.font = 'bold 82px "Trebuchet MS", "Comic Sans MS", sans-serif';
+    ctx.fillText(String(countdownValue), WIDTH / 2, panelY + 122);
+
+    ctx.font = '18px "Trebuchet MS", "Comic Sans MS", sans-serif';
+    ctx.fillStyle = "#7d6248";
+    ctx.fillText("Game starts right after the countdown", WIDTH / 2, panelY + 166);
+  }
+
   function drawGameOverScreen() {
     const panelWidth = 470;
     const panelX = (WIDTH - panelWidth) / 2;
@@ -1195,6 +1309,8 @@
 
     if (state.mode === "start") {
       drawStartScreen();
+    } else if (state.mode === "countdown") {
+      drawCountdownScreen();
     } else if (state.mode === "gameover") {
       drawGameOverScreen();
     }
@@ -1255,6 +1371,7 @@
 
   if (controlsBtn && controlsPanel) {
     controlsBtn.addEventListener("click", () => {
+      resumeAudio();
       setControlsOpen(controlsPanel.hidden);
     });
 
@@ -1293,6 +1410,31 @@
     updateFullscreenButton();
     applyFullscreenLayout();
   }
+
+  if (musicBtn) {
+    updateMusicButton();
+    musicBtn.addEventListener("click", () => {
+      initAudio();
+      if (audio.ctx && audio.ctx.state === "suspended") {
+        audio.ctx.resume();
+      }
+      toggleBackgroundMusic();
+    });
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    syncBackgroundMusic();
+  });
+
+  window.addEventListener("focus", () => {
+    syncBackgroundMusic();
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (audio.bgm) {
+      audio.bgm.pause();
+    }
+  });
 
   resetGame();
 
