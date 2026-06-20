@@ -36,6 +36,11 @@
     bubuDrawSize: 84,
     duduDrawSize: 70,
     duduFollowOffset: 58,
+    difficultyStep: 20,
+    minPipeGap: 150,
+    maxSpeedMultiplier: 1.3,
+    fireballRadius: 20,
+    fireballWarningTime: 90,
     shareUrl: "", // Optional: set your deployed game URL here.
     highScoreKey: "bubuDuduFlappyHighScore",
   };
@@ -47,6 +52,10 @@
     time: 0,
     scroll: 0,
     hitFlash: 0,
+    difficultyTier: 0,
+    levelUpTimer: 0,
+    levelUpText: "",
+    fireballCooldown: 0,
   };
 
   const bubu = {
@@ -65,6 +74,8 @@
 
   const followerTrail = [];
   const pipes = [];
+  const fireballs = [];
+  let pipeSequence = 0;
 
   const clouds = [
     { x: 30, y: 86, size: 30, speed: 0.12 },
@@ -412,22 +423,105 @@
     playTone(240, 0.17, { type: "sawtooth", volume: 0.028, endFrequency: 130, startOffset: 0.1 });
   }
 
-  function randomGapY() {
-    const min = 100 + CONFIG.pipeGap * 0.5;
-    const max = GROUND_Y - 60 - CONFIG.pipeGap * 0.5;
+  function playLevelUpSound() {
+    playTone(660, 0.08, { type: "triangle", volume: 0.03, endFrequency: 820 });
+    playTone(880, 0.1, {
+      type: "triangle",
+      volume: 0.032,
+      endFrequency: 1120,
+      startOffset: 0.08,
+    });
+  }
+
+  function getDifficultySettings(tier = state.difficultyTier) {
+    const advancedSteps = Math.max(0, tier - 3);
+    const speedMultiplier = Math.min(
+      CONFIG.maxSpeedMultiplier,
+      1 + advancedSteps * 0.05
+    );
+
+    return {
+      tier,
+      stage: tier + 1,
+      movingPipes: tier === 1 || tier >= 3,
+      fireballs: tier === 2 || tier >= 3,
+      scrollSpeed: CONFIG.scrollSpeed * speedMultiplier,
+      pipeGap: Math.max(CONFIG.minPipeGap, CONFIG.pipeGap - advancedSteps * 4),
+      movingAmplitude: Math.min(58, 38 + advancedSteps * 3),
+      fireballSpeed: Math.min(7.2, 5.4 + advancedSteps * 0.25),
+      fireballCooldown: Math.max(240, 360 - advancedSteps * 20),
+    };
+  }
+
+  function getDifficultyLabel(tier = state.difficultyTier) {
+    if (tier === 0) return "Warm-up";
+    if (tier === 1) return "Moving Pipes";
+    if (tier === 2) return "Fireballs";
+    if (tier === 3) return "Double Trouble";
+    return "Faster Hazards";
+  }
+
+  function getLevelUpMessage(tier) {
+    if (tier === 1) return "Moving pipes unlocked!";
+    if (tier === 2) return "Fireballs incoming!";
+    if (tier === 3) return "Pipes + fireballs!";
+    return "Speed increased!";
+  }
+
+  function setDifficultyTier(tier) {
+    if (tier === state.difficultyTier) return;
+
+    state.difficultyTier = tier;
+    state.levelUpText = getLevelUpMessage(tier);
+    state.levelUpTimer = 150;
+    state.fireballCooldown = tier === 2 || tier >= 3 ? 180 : 0;
+    playLevelUpSound();
+  }
+
+  function addScore() {
+    state.score += 1;
+    const nextTier = Math.floor(state.score / CONFIG.difficultyStep);
+
+    if (nextTier > state.difficultyTier) {
+      setDifficultyTier(nextTier);
+    }
+  }
+
+  function getGapCenterBounds(gapSize) {
+    return {
+      min: 100 + gapSize * 0.5,
+      max: GROUND_Y - 60 - gapSize * 0.5,
+    };
+  }
+
+  function randomGapY(gapSize = getDifficultySettings().pipeGap) {
+    const { min, max } = getGapCenterBounds(gapSize);
     return min + Math.random() * (max - min);
+  }
+
+  function configurePipe(pipe, x) {
+    const gapSize = getDifficultySettings().pipeGap;
+    const gapY = randomGapY(gapSize);
+
+    pipe.x = x;
+    pipe.baseGapY = gapY;
+    pipe.gapY = gapY;
+    pipe.moveOffset = 0;
+    pipe.movePhase = Math.random() * Math.PI * 2;
+    pipe.moving = pipeSequence % 3 === 1;
+    pipe.scored = false;
+    pipeSequence += 1;
   }
 
   function initPipes() {
     pipes.length = 0;
+    pipeSequence = 0;
     const firstX = Math.round(WIDTH * 0.68);
 
     for (let i = 0; i < CONFIG.pipeCount; i += 1) {
-      pipes.push({
-        x: firstX + i * CONFIG.pipeSpacing,
-        gapY: randomGapY(),
-        scored: false,
-      });
+      const pipe = {};
+      configurePipe(pipe, firstX + i * CONFIG.pipeSpacing);
+      pipes.push(pipe);
     }
   }
 
@@ -436,6 +530,11 @@
     state.score = 0;
     state.scroll = 0;
     state.hitFlash = 0;
+    state.difficultyTier = 0;
+    state.levelUpTimer = 0;
+    state.levelUpText = "";
+    state.fireballCooldown = 0;
+    fireballs.length = 0;
 
     bubu.x = CONFIG.bubuStartX;
     bubu.y = HEIGHT * 0.42;
@@ -501,20 +600,82 @@
   }
 
   function updatePipes(dt) {
+    const difficulty = getDifficultySettings();
+    const { min: minGapY, max: maxGapY } = getGapCenterBounds(difficulty.pipeGap);
+
     for (const pipe of pipes) {
-      pipe.x -= CONFIG.scrollSpeed * dt;
+      pipe.x -= difficulty.scrollSpeed * dt;
+
+      const shouldMove = difficulty.movingPipes && pipe.moving;
+      const targetOffset = shouldMove
+        ? Math.sin(state.time * 0.025 + pipe.movePhase) * difficulty.movingAmplitude
+        : 0;
+      pipe.moveOffset += (targetOffset - pipe.moveOffset) * Math.min(1, 0.035 * dt);
+      pipe.gapY = clamp(pipe.baseGapY + pipe.moveOffset, minGapY, maxGapY);
 
       if (!pipe.scored && pipe.x + CONFIG.pipeWidth < bubu.x - bubu.radius) {
         pipe.scored = true;
-        state.score += 1;
+        addScore();
         playScoreSound();
       }
 
       if (pipe.x + CONFIG.pipeWidth < -20) {
         const farthestX = pipes.reduce((maxX, p) => Math.max(maxX, p.x), 0);
-        pipe.x = farthestX + CONFIG.pipeSpacing;
-        pipe.gapY = randomGapY();
-        pipe.scored = false;
+        configurePipe(pipe, farthestX + CONFIG.pipeSpacing);
+      }
+    }
+  }
+
+  function chooseFireballY() {
+    const lanes = [135, 220, 305, 390];
+    const safeLanes = lanes.filter((laneY) => Math.abs(laneY - bubu.y) > 95);
+    const choices = safeLanes.length > 0 ? safeLanes : lanes;
+    return choices[Math.floor(Math.random() * choices.length)];
+  }
+
+  function spawnFireball() {
+    fireballs.push({
+      mode: "warning",
+      x: WIDTH + 50,
+      y: chooseFireballY(),
+      radius: CONFIG.fireballRadius,
+      warningTimer: CONFIG.fireballWarningTime,
+      spin: 0,
+    });
+  }
+
+  function updateFireballs(dt) {
+    const difficulty = getDifficultySettings();
+
+    if (!difficulty.fireballs) {
+      fireballs.length = 0;
+      return;
+    }
+
+    state.fireballCooldown -= dt;
+
+    if (state.fireballCooldown <= 0 && fireballs.length === 0) {
+      spawnFireball();
+      state.fireballCooldown = difficulty.fireballCooldown + Math.random() * 90;
+    }
+
+    for (let i = fireballs.length - 1; i >= 0; i -= 1) {
+      const fireball = fireballs[i];
+
+      if (fireball.mode === "warning") {
+        fireball.warningTimer -= dt;
+        if (fireball.warningTimer <= 0) {
+          fireball.mode = "flying";
+          fireball.x = WIDTH + fireball.radius + 18;
+        }
+        continue;
+      }
+
+      fireball.x -= difficulty.fireballSpeed * dt;
+      fireball.spin += 0.12 * dt;
+
+      if (fireball.x + fireball.radius < -40) {
+        fireballs.splice(i, 1);
       }
     }
   }
@@ -532,10 +693,24 @@
 
       if (!withinX) continue;
 
-      const gapTop = pipe.gapY - CONFIG.pipeGap * 0.5;
-      const gapBottom = pipe.gapY + CONFIG.pipeGap * 0.5;
+      const pipeGap = getDifficultySettings().pipeGap;
+      const gapTop = pipe.gapY - pipeGap * 0.5;
+      const gapBottom = pipe.gapY + pipeGap * 0.5;
 
       if (bubu.y - bubu.radius < gapTop || bubu.y + bubu.radius > gapBottom) {
+        toGameOver();
+        return;
+      }
+    }
+
+    for (const fireball of fireballs) {
+      if (fireball.mode !== "flying") continue;
+
+      const dx = bubu.x - fireball.x;
+      const dy = bubu.y - fireball.y;
+      const collisionDistance = (bubu.radius + fireball.radius) * 0.82;
+
+      if (dx * dx + dy * dy < collisionDistance * collisionDistance) {
         toGameOver();
         return;
       }
@@ -567,9 +742,11 @@
   function update(dt, nowMs) {
     state.time += dt;
     state.hitFlash = Math.max(0, state.hitFlash - 0.05 * dt);
+    state.levelUpTimer = Math.max(0, state.levelUpTimer - dt);
 
     if (state.mode === "playing") {
-      state.scroll += CONFIG.scrollSpeed * dt;
+      const difficulty = getDifficultySettings();
+      state.scroll += difficulty.scrollSpeed * dt;
 
       bubu.vy = Math.min(CONFIG.maxFallSpeed, bubu.vy + CONFIG.gravity * dt);
       bubu.y += bubu.vy * dt;
@@ -582,6 +759,7 @@
       bubu.rotation = clamp(bubu.vy * 0.09, -0.6, 1.1);
 
       updatePipes(dt);
+      updateFireballs(dt);
       checkCollision();
     } else if (state.mode === "start") {
       const floatTargetY = HEIGHT * 0.42 + Math.sin(nowMs * 0.004) * 8;
@@ -654,13 +832,93 @@
   }
 
   function drawPipes() {
+    const pipeGap = getDifficultySettings().pipeGap;
+
     for (const pipe of pipes) {
-      const gapTop = pipe.gapY - CONFIG.pipeGap * 0.5;
-      const gapBottom = pipe.gapY + CONFIG.pipeGap * 0.5;
+      const gapTop = pipe.gapY - pipeGap * 0.5;
+      const gapBottom = pipe.gapY + pipeGap * 0.5;
 
       drawHoneyPipe(pipe.x, 0, CONFIG.pipeWidth, gapTop, true);
       drawHoneyPipe(pipe.x, gapBottom, CONFIG.pipeWidth, GROUND_Y - gapBottom, false);
     }
+  }
+
+  function drawFireballs() {
+    for (const fireball of fireballs) {
+      if (fireball.mode === "warning") {
+        drawFireballWarning(fireball);
+      } else {
+        drawFireball(fireball);
+      }
+    }
+  }
+
+  function drawFireballWarning(fireball) {
+    const pulse = 0.65 + Math.sin(state.time * 0.22) * 0.25;
+    const iconX = WIDTH - 48;
+
+    ctx.save();
+    ctx.globalAlpha = pulse;
+    ctx.strokeStyle = "#d84922";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.moveTo(bubu.x + 90, fireball.y);
+    ctx.lineTo(iconX - 28, fireball.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#fff3dc";
+    ctx.strokeStyle = "#d84922";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(iconX, fireball.y, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#c9391c";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = 'bold 28px "Trebuchet MS", sans-serif';
+    ctx.fillText("!", iconX, fireball.y + 1);
+    ctx.restore();
+  }
+
+  function drawFireball(fireball) {
+    const flicker = Math.sin(state.time * 0.35) * 3;
+
+    ctx.save();
+    ctx.translate(fireball.x, fireball.y);
+
+    ctx.fillStyle = "rgba(255, 107, 26, 0.38)";
+    ctx.beginPath();
+    ctx.moveTo(12, -13);
+    ctx.quadraticCurveTo(43 + flicker, -3, 57, 0);
+    ctx.quadraticCurveTo(42 - flicker, 8, 11, 14);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.rotate(fireball.spin);
+    const glow = ctx.createRadialGradient(-5, -6, 2, 0, 0, fireball.radius + 8);
+    glow.addColorStop(0, "#fff7a8");
+    glow.addColorStop(0.35, "#ffc33d");
+    glow.addColorStop(0.72, "#f26322");
+    glow.addColorStop(1, "rgba(190, 36, 16, 0.25)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, fireball.radius + 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#f0441f";
+    ctx.beginPath();
+    ctx.arc(0, 0, fireball.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffd85a";
+    ctx.beginPath();
+    ctx.arc(-6, -6, fireball.radius * 0.48, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   function drawHoneyPipe(x, y, width, height, capAtBottom) {
@@ -818,6 +1076,57 @@
     ctx.fillText(String(state.score), WIDTH * 0.5, 64);
   }
 
+  function drawDifficultyHud() {
+    if (state.mode !== "playing") return;
+
+    const difficulty = getDifficultySettings();
+    const label = `Stage ${difficulty.stage} • ${getDifficultyLabel()}`;
+
+    ctx.save();
+    ctx.font = 'bold 15px "Trebuchet MS", "Comic Sans MS", sans-serif';
+    const width = ctx.measureText(label).width + 30;
+    ctx.fillStyle = "rgba(65, 39, 21, 0.68)";
+    roundRect(ctx, 18, 18, width, 36, 18);
+    ctx.fill();
+    ctx.fillStyle = "#fffdf7";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, 33, 36);
+    ctx.restore();
+  }
+
+  function drawLevelUpNotice() {
+    if (state.levelUpTimer <= 0 || !state.levelUpText) return;
+
+    const fadeIn = Math.min(1, (150 - state.levelUpTimer) / 18);
+    const fadeOut = Math.min(1, state.levelUpTimer / 25);
+    const alpha = Math.min(fadeIn, fadeOut);
+    const panelWidth = 390;
+    const panelHeight = 76;
+    const panelX = (WIDTH - panelWidth) / 2;
+    const panelY = 92;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "rgba(255, 251, 237, 0.95)";
+    roundRect(ctx, panelX, panelY, panelWidth, panelHeight, 18);
+    ctx.fill();
+    ctx.strokeStyle = "#f08a2a";
+    ctx.lineWidth = 3;
+    roundRect(ctx, panelX, panelY, panelWidth, panelHeight, 18);
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#a7421d";
+    ctx.font = 'bold 15px "Trebuchet MS", sans-serif';
+    ctx.fillText(`MILESTONE ${state.difficultyTier * CONFIG.difficultyStep}`, WIDTH / 2, panelY + 23);
+    ctx.fillStyle = "#5d3e24";
+    ctx.font = 'bold 25px "Trebuchet MS", "Comic Sans MS", sans-serif';
+    ctx.fillText(state.levelUpText, WIDTH / 2, panelY + 51);
+    ctx.restore();
+  }
+
   function drawStartScreen() {
     const panelWidth = 520;
     const panelX = (WIDTH - panelWidth) / 2;
@@ -874,12 +1183,15 @@
 
     drawBackground();
     drawPipes();
+    drawFireballs();
     drawGround();
 
     drawCharacter(dudu, assets.dudu, true);
     drawCharacter(bubu, assets.bubu, false);
 
     drawScore();
+    drawDifficultyHud();
+    drawLevelUpNotice();
 
     if (state.mode === "start") {
       drawStartScreen();

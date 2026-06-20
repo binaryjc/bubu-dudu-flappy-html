@@ -668,6 +668,10 @@ ul {
     font-size: 12px;
   }
 
+  .controls-list .difficulty-control {
+    display: none;
+  }
+
   .controls-tip {
     display: none;
   }
