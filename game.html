@@ -13,15 +13,52 @@
   <body class="embed-only-body">
     <main class="embed-only-main">
       <section id="fullscreenTarget" class="game-frame game-frame-embed">
-        <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy Embedded Game"></canvas>
-        <button
-          id="fullscreenBtn"
-          class="fullscreen-btn fullscreen-btn-embed"
-          data-enter-label="Play Fullscreen"
-          type="button"
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Bubu & Dudu Flappy Embedded Game"></canvas>
+        <div class="game-actions" aria-label="Game options">
+          <button
+            id="controlsBtn"
+            class="game-action-btn"
+            type="button"
+            aria-controls="controlsPanel"
+            aria-expanded="false"
+          >
+            Controls
+          </button>
+          <button
+            id="fullscreenBtn"
+            class="game-action-btn fullscreen-btn fullscreen-btn-embed"
+            data-enter-label="Play Fullscreen"
+            type="button"
+          >
+            Play Fullscreen
+          </button>
+        </div>
+        <div
+          id="controlsPanel"
+          class="controls-popover"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="controlsTitle"
+          hidden
         >
-          Play Fullscreen
-        </button>
+          <div class="controls-dialog">
+            <div class="controls-dialog-heading">
+              <div>
+                <p class="game-kicker">Quick guide</p>
+                <h2 id="controlsTitle">How to play</h2>
+              </div>
+              <button id="controlsCloseBtn" class="dialog-close-btn" type="button" aria-label="Close controls">
+                &times;
+              </button>
+            </div>
+            <div class="controls-list">
+              <p><span>Spacebar</span> Flap on desktop</p>
+              <p><span>Mouse click</span> Flap on desktop</p>
+              <p><span>Tap screen</span> Flap on mobile</p>
+            </div>
+            <p class="controls-tip">Use short, steady taps to line up with each opening.</p>
+          </div>
+        </div>
       </section>
     </main>
 

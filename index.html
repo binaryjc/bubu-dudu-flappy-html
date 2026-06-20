@@ -33,21 +33,61 @@
     </header>
 
     <main class="container page-stack">
-      <section class="card hero-card">
-        <h1>Bubu &amp; Dudu Flappy</h1>
-        <p>
-          Bubu &amp; Dudu Flappy is a bright and friendly Bubu and Dudu game where two bears fly through
-          honey-themed obstacles. This online flappy game is made for quick sessions, smooth controls, and
-          replayable high-score challenges.
-        </p>
-      </section>
-
       <section class="card game-card" aria-label="Game Canvas Area">
+        <div class="game-card-heading">
+          <div>
+            <p class="game-kicker">One-button flying game</p>
+            <h1>Bubu &amp; Dudu Flappy</h1>
+          </div>
+          <p>Fly together, dodge the honey pipes, and chase a new high score.</p>
+        </div>
         <div id="fullscreenTarget" class="game-frame">
-          <canvas id="gameCanvas" width="360" height="640" aria-label="Bubu & Dudu Flappy Game Canvas"></canvas>
-          <button id="fullscreenBtn" class="fullscreen-btn" data-enter-label="Fullscreen" type="button">
-            Fullscreen
-          </button>
+          <canvas id="gameCanvas" width="960" height="540" aria-label="Bubu & Dudu Flappy Game Canvas"></canvas>
+          <div class="game-actions" aria-label="Game options">
+            <button
+              id="controlsBtn"
+              class="game-action-btn"
+              type="button"
+              aria-controls="controlsPanel"
+              aria-expanded="false"
+            >
+              Controls
+            </button>
+            <button
+              id="fullscreenBtn"
+              class="game-action-btn fullscreen-btn"
+              data-enter-label="Fullscreen"
+              type="button"
+            >
+              Fullscreen
+            </button>
+          </div>
+          <div
+            id="controlsPanel"
+            class="controls-popover"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="controlsTitle"
+            hidden
+          >
+            <div class="controls-dialog">
+              <div class="controls-dialog-heading">
+                <div>
+                  <p class="game-kicker">Quick guide</p>
+                  <h2 id="controlsTitle">How to play</h2>
+                </div>
+                <button id="controlsCloseBtn" class="dialog-close-btn" type="button" aria-label="Close controls">
+                  &times;
+                </button>
+              </div>
+              <div class="controls-list">
+                <p><span>Spacebar</span> Flap on desktop</p>
+                <p><span>Mouse click</span> Flap on desktop</p>
+                <p><span>Tap screen</span> Flap on mobile</p>
+              </div>
+              <p class="controls-tip">Use short, steady taps to line up with each opening.</p>
+            </div>
+          </div>
         </div>
         <section id="sharePanel" class="share-panel" hidden>
           <button id="shareBtn" class="primary-btn" type="button">Share Score</button>
@@ -64,9 +104,10 @@
       <section class="card">
         <h2>Game Description</h2>
         <p>
-          This flying bear game combines simple one-tap control with classic flappy style arcade game
-          pressure. Bubu leads each run while Dudu follows as a playful companion, giving the game a unique
-          two-character feel. Your goal is to pass as many obstacle gaps as possible without crashing.
+          Bubu &amp; Dudu Flappy is a bright and friendly flying bear game that combines simple one-tap
+          control with classic flappy style arcade pressure. Bubu leads each run while Dudu follows as a
+          playful companion, giving the game a unique two-character feel. Your goal is to pass as many
+          obstacle gaps as possible without crashing.
         </p>
         <p>
           Because it is a lightweight HTML5 browser game, you can play instantly on modern desktop and

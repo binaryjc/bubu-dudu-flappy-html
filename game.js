@@ -10,25 +10,28 @@
   const shareStatus = document.getElementById("shareStatus");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   const fullscreenTarget = document.getElementById("fullscreenTarget") || canvas.parentElement;
+  const controlsBtn = document.getElementById("controlsBtn");
+  const controlsPanel = document.getElementById("controlsPanel");
+  const controlsCloseBtn = document.getElementById("controlsCloseBtn");
   const fullscreenEnterLabel = fullscreenBtn
     ? fullscreenBtn.dataset.enterLabel || fullscreenBtn.textContent.trim() || "Fullscreen"
     : "Fullscreen";
 
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
-  const GROUND_HEIGHT = 96;
+  const GROUND_HEIGHT = 76;
   const GROUND_Y = HEIGHT - GROUND_HEIGHT;
 
   const CONFIG = {
     gravity: 0.36,
     flapImpulse: -6.6,
     maxFallSpeed: 10.5,
-    scrollSpeed: 2.25,
-    pipeWidth: 72,
-    pipeGap: 170,
-    pipeSpacing: 214,
-    pipeCount: 4,
-    bubuStartX: 96,
+    scrollSpeed: 2.55,
+    pipeWidth: 82,
+    pipeGap: 178,
+    pipeSpacing: 292,
+    pipeCount: 5,
+    bubuStartX: 220,
     bubuRadius: 22,
     bubuDrawSize: 84,
     duduDrawSize: 70,
@@ -66,9 +69,11 @@
   const clouds = [
     { x: 30, y: 86, size: 30, speed: 0.12 },
     { x: 170, y: 132, size: 24, speed: 0.17 },
-    { x: 280, y: 72, size: 34, speed: 0.09 },
-    { x: 390, y: 116, size: 28, speed: 0.14 },
-    { x: 500, y: 92, size: 22, speed: 0.2 },
+    { x: 310, y: 72, size: 34, speed: 0.09 },
+    { x: 470, y: 116, size: 28, speed: 0.14 },
+    { x: 620, y: 92, size: 22, speed: 0.2 },
+    { x: 770, y: 142, size: 30, speed: 0.11 },
+    { x: 910, y: 76, size: 25, speed: 0.16 },
   ];
 
   const assets = {
@@ -137,6 +142,19 @@
   function updateFullscreenButton() {
     if (!fullscreenBtn) return;
     fullscreenBtn.textContent = getFullscreenElement() ? "Exit Fullscreen" : fullscreenEnterLabel;
+  }
+
+  function setControlsOpen(isOpen) {
+    if (!controlsPanel || !controlsBtn) return;
+
+    controlsPanel.hidden = !isOpen;
+    controlsBtn.setAttribute("aria-expanded", String(isOpen));
+
+    if (isOpen) {
+      controlsCloseBtn?.focus();
+    } else {
+      controlsBtn.focus();
+    }
   }
 
   function applyFullscreenLayout() {
@@ -395,14 +413,14 @@
   }
 
   function randomGapY() {
-    const min = 130 + CONFIG.pipeGap * 0.5;
-    const max = GROUND_Y - 80 - CONFIG.pipeGap * 0.5;
+    const min = 100 + CONFIG.pipeGap * 0.5;
+    const max = GROUND_Y - 60 - CONFIG.pipeGap * 0.5;
     return min + Math.random() * (max - min);
   }
 
   function initPipes() {
     pipes.length = 0;
-    const firstX = WIDTH + 120;
+    const firstX = Math.round(WIDTH * 0.68);
 
     for (let i = 0; i < CONFIG.pipeCount; i += 1) {
       pipes.push({
@@ -801,39 +819,43 @@
   }
 
   function drawStartScreen() {
-    drawPanel(34, HEIGHT * 0.24, WIDTH - 68, 222);
+    const panelWidth = 520;
+    const panelX = (WIDTH - panelWidth) / 2;
+    drawPanel(panelX, HEIGHT * 0.2, panelWidth, 222);
 
     ctx.textAlign = "center";
     ctx.fillStyle = "#5d3e24";
     ctx.font = 'bold 34px "Trebuchet MS", "Comic Sans MS", sans-serif';
-    ctx.fillText("Bubu & Dudu Flappy", WIDTH / 2, HEIGHT * 0.24 + 64);
+    ctx.fillText("Bubu & Dudu Flappy", WIDTH / 2, HEIGHT * 0.2 + 64);
 
     ctx.font = 'bold 26px "Trebuchet MS", "Comic Sans MS", sans-serif';
     ctx.fillStyle = "#7b532f";
-    ctx.fillText("Tap to Start", WIDTH / 2, HEIGHT * 0.24 + 114);
+    ctx.fillText("Tap to Start", WIDTH / 2, HEIGHT * 0.2 + 114);
 
     ctx.font = '18px "Trebuchet MS", "Comic Sans MS", sans-serif';
     ctx.fillStyle = "#7d6248";
-    ctx.fillText("Tap / Click / Space to flap", WIDTH / 2, HEIGHT * 0.24 + 156);
-    ctx.fillText(`High Score: ${state.highScore}`, WIDTH / 2, HEIGHT * 0.24 + 188);
+    ctx.fillText("Tap / Click / Space to flap", WIDTH / 2, HEIGHT * 0.2 + 156);
+    ctx.fillText(`High Score: ${state.highScore}`, WIDTH / 2, HEIGHT * 0.2 + 188);
   }
 
   function drawGameOverScreen() {
-    drawPanel(46, HEIGHT * 0.23, WIDTH - 92, 238);
+    const panelWidth = 470;
+    const panelX = (WIDTH - panelWidth) / 2;
+    drawPanel(panelX, HEIGHT * 0.18, panelWidth, 238);
 
     ctx.textAlign = "center";
     ctx.fillStyle = "#5d3e24";
     ctx.font = 'bold 36px "Trebuchet MS", "Comic Sans MS", sans-serif';
-    ctx.fillText("Game Over", WIDTH / 2, HEIGHT * 0.23 + 58);
+    ctx.fillText("Game Over", WIDTH / 2, HEIGHT * 0.18 + 58);
 
     ctx.font = 'bold 24px "Trebuchet MS", "Comic Sans MS", sans-serif';
     ctx.fillStyle = "#7a532e";
-    ctx.fillText(`Score: ${state.score}`, WIDTH / 2, HEIGHT * 0.23 + 104);
-    ctx.fillText(`High Score: ${state.highScore}`, WIDTH / 2, HEIGHT * 0.23 + 138);
+    ctx.fillText(`Score: ${state.score}`, WIDTH / 2, HEIGHT * 0.18 + 104);
+    ctx.fillText(`High Score: ${state.highScore}`, WIDTH / 2, HEIGHT * 0.18 + 138);
 
     ctx.font = '18px "Trebuchet MS", "Comic Sans MS", sans-serif';
     ctx.fillStyle = "#7d6248";
-    ctx.fillText("Tap / Click / Space to Restart", WIDTH / 2, HEIGHT * 0.23 + 184);
+    ctx.fillText("Tap / Click / Space to Restart", WIDTH / 2, HEIGHT * 0.18 + 184);
   }
 
   function drawPanel(x, y, width, height) {
@@ -893,6 +915,12 @@
   });
 
   window.addEventListener("keydown", (event) => {
+    if (event.code === "Escape" && controlsPanel && !controlsPanel.hidden) {
+      event.preventDefault();
+      setControlsOpen(false);
+      return;
+    }
+
     if (event.code !== "Space") return;
     const activeTag = document.activeElement ? document.activeElement.tagName : "";
     if (["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(activeTag)) return;
@@ -910,6 +938,22 @@
   if (copyShareBtn) {
     copyShareBtn.addEventListener("click", () => {
       copyShareText();
+    });
+  }
+
+  if (controlsBtn && controlsPanel) {
+    controlsBtn.addEventListener("click", () => {
+      setControlsOpen(controlsPanel.hidden);
+    });
+
+    controlsCloseBtn?.addEventListener("click", () => {
+      setControlsOpen(false);
+    });
+
+    controlsPanel.addEventListener("pointerdown", (event) => {
+      if (event.target === controlsPanel) {
+        setControlsOpen(false);
+      }
     });
   }
 
